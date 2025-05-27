@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 export default function Home() {
   const [inputColor, setInputColor] = useState("");
   const [recommendation, setRecommendation] = useState("");

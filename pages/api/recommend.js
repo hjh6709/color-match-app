@@ -1,3 +1,5 @@
+import getColorName from "@/utils/colorName";
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).send("Only POST allowed");
@@ -6,7 +8,6 @@ export default async function handler(req, res) {
   const { color } = req.body;
 
   try {
-    // Colormind에 전달할 색상 이름 → RGB 값으로 변환
     const colorMap = {
       빨간색: [255, 0, 0],
       파란색: [0, 0, 255],
@@ -36,12 +37,12 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    const recommended = data.result[1]; // 두 번째 색상을 추천
-
+    const recommended = data.result[1]; // 두 번째 추천 색상
     const [r, g, b] = recommended;
     const rgbString = `rgb(${r}, ${g}, ${b})`;
+    const name = getColorName(r, g, b);
 
-    res.status(200).json({ result: `추천 색상: ${rgbString}` });
+    res.status(200).json({ result: `추천 색상: ${rgbString} (${name})` });
   } catch (error) {
     console.error("Colormind API Error:", error);
     res.status(500).json({ error: "색상 추천 실패" });
