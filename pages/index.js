@@ -1,4 +1,3 @@
-// pages/index.js
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
@@ -22,34 +21,16 @@ export default function Home() {
       bottom: ["흰색", "베이지", "네이비"],
       outer: ["연그레이", "아이보리"],
     },
-    흰색: {
-      bottom: ["검정", "진청색", "베이지"],
-      outer: ["회색", "네이비"],
-    },
+    흰색: { bottom: ["검정", "진청색", "베이지"], outer: ["회색", "네이비"] },
     네이비: {
       bottom: ["연청색", "흰색", "연베이지"],
       outer: ["아이보리", "회색"],
     },
-    연핑크: {
-      bottom: ["흰색", "베이지"],
-      outer: ["아이보리", "회색"],
-    },
-    크림: {
-      bottom: ["네이비", "연청색"],
-      outer: ["브라운", "베이지"],
-    },
-    민트: {
-      bottom: ["흰색", "회색", "연청색"],
-      outer: ["아이보리", "그레이"],
-    },
-    연노랑: {
-      bottom: ["베이지", "진청색"],
-      outer: ["카키", "브라운"],
-    },
-    브릭레드: {
-      bottom: ["검정", "네이비"],
-      outer: ["회색", "아이보리"],
-    },
+    연핑크: { bottom: ["흰색", "베이지"], outer: ["아이보리", "회색"] },
+    크림: { bottom: ["네이비", "연청색"], outer: ["브라운", "베이지"] },
+    민트: { bottom: ["흰색", "회색", "연청색"], outer: ["아이보리", "그레이"] },
+    연노랑: { bottom: ["베이지", "진청색"], outer: ["카키", "브라운"] },
+    브릭레드: { bottom: ["검정", "네이비"], outer: ["회색", "아이보리"] },
   };
 
   const colorToCode = {
@@ -72,6 +53,16 @@ export default function Home() {
     연노랑: "#ffffcc",
     브릭레드: "#8b0000",
     그레이: "#aaaaaa",
+  };
+
+  // 🔽 텍스트 색상을 배경 밝기에 따라 결정하는 함수
+  const getTextColor = (bgColor) => {
+    const color = bgColor.substring(1);
+    const r = parseInt(color.substring(0, 2), 16);
+    const g = parseInt(color.substring(2, 4), 16);
+    const b = parseInt(color.substring(4, 6), 16);
+    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminance > 0.6 ? "#000000" : "#ffffff";
   };
 
   useEffect(() => {
@@ -260,48 +251,32 @@ export default function Home() {
               marginTop: "16px",
             }}
           >
-            <div
-              style={{
-                backgroundColor: colorToCode[outfit.top.split(" ")[0]],
-                width: 60,
-                height: 60,
-                borderRadius: 8,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-              }}
-            >
-              상의
-            </div>
-            <div
-              style={{
-                backgroundColor: colorToCode[outfit.bottom.split(" ")[0]],
-                width: 60,
-                height: 60,
-                borderRadius: 8,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-              }}
-            >
-              하의
-            </div>
-            <div
-              style={{
-                backgroundColor: colorToCode[outfit.outer.split(" ")[0]],
-                width: 60,
-                height: 60,
-                borderRadius: 8,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
-              }}
-            >
-              아우터
-            </div>
+            {["top", "bottom", "outer"].map((part) => {
+              const colorName = outfit[part].split(" ")[0];
+              const bgColor = colorToCode[colorName];
+              return (
+                <div
+                  key={part}
+                  style={{
+                    backgroundColor: bgColor,
+                    color: getTextColor(bgColor),
+                    width: 60,
+                    height: 60,
+                    borderRadius: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {part === "top"
+                    ? "상의"
+                    : part === "bottom"
+                    ? "하의"
+                    : "아우터"}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
