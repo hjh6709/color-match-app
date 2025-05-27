@@ -9,6 +9,38 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const colorCombinations = {
+    베이지: {
+      bottom: ["진청색", "검정", "네이비"],
+      outer: ["브라운", "카키", "아이보리"],
+    },
+    검정: {
+      bottom: ["흰색", "연청색", "회색"],
+      outer: ["아이보리", "회색", "연베이지"],
+    },
+    하늘색: {
+      bottom: ["흰색", "베이지", "네이비"],
+      outer: ["연그레이", "아이보리"],
+    },
+    흰색: {
+      bottom: ["검정", "진청색", "베이지"],
+      outer: ["회색", "네이비"],
+    },
+    네이비: {
+      bottom: ["연청색", "흰색", "연베이지"],
+      outer: ["아이보리", "회색"],
+    },
+    연핑크: {
+      bottom: ["흰색", "베이지"],
+      outer: ["아이보리", "회색"],
+    },
+    크림: {
+      bottom: ["네이비", "연청색"],
+      outer: ["브라운", "베이지"],
+    },
+    // 필요한 만큼 색상 조합 추가 가능
+  };
+
   useEffect(() => {
     const savedData = localStorage.getItem("outfitRecommendation");
     if (savedData) {
@@ -18,6 +50,8 @@ export default function Home() {
       setLocation(parsed.location);
     }
   }, []);
+
+  const getRandom = (list) => list[Math.floor(Math.random() * list.length)];
 
   const getWeatherRecommendation = () => {
     if (!navigator.geolocation) {
@@ -40,8 +74,19 @@ export default function Home() {
           if (!data.outfit || !data.temp || !data.condition)
             throw new Error("응답 데이터 누락");
 
+          const topColors = Object.keys(colorCombinations);
+          const topColor = getRandom(topColors);
+          const bottomColor = getRandom(colorCombinations[topColor].bottom);
+          const outerColor = getRandom(colorCombinations[topColor].outer);
+
           const outfitData = {
-            outfit: data.outfit,
+            outfit: {
+              top: `${topColor} ${data.outfit.top.split(" ").slice(-1)}`,
+              bottom: `${bottomColor} ${data.outfit.bottom
+                .split(" ")
+                .slice(-1)}`,
+              outer: `${outerColor} ${data.outfit.outer.split(" ").slice(-1)}`,
+            },
             weather: {
               temp: data.temp,
               feelsLike: data.feelsLike,
