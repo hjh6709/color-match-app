@@ -114,7 +114,21 @@ export default async function handler(req, res) {
   const { lat, lon } = req.query;
 
   const apiKey = process.env.WEATHER_API_KEY;
-  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=kr`;
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=en`;
+  const descriptionMap = {
+    "clear sky": "맑음",
+    "few clouds": "구름 조금",
+    "scattered clouds": "흩어진 구름",
+    "broken clouds": "흐림",
+    "overcast clouds": "흐림",
+    "light rain": "약한 비",
+    "moderate rain": "비",
+    "heavy intensity rain": "강한 비",
+    snow: "눈",
+    mist: "안개",
+  };
+  const translatedCondition =
+    descriptionMap[condition] || `${condition} (영문)`;
 
   try {
     const response = await fetch(url);
@@ -140,7 +154,7 @@ export default async function handler(req, res) {
       temp,
       feelsLike,
       humidity,
-      condition,
+      condition: translatedCondition,
       outfit: {
         top: `${topColor} ${topItem}`,
         bottom: `${bottomColor} ${bottomItem}`,
