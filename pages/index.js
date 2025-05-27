@@ -77,30 +77,66 @@ export default function Home() {
     );
   };
 
+  const clearRecommendation = () => {
+    localStorage.removeItem("outfitRecommendation");
+    setOutfit(null);
+    setWeather(null);
+    setLocation("");
+    setError(null);
+  };
+
   const cardStyle = {
     marginTop: "24px",
     padding: "20px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#f9f9f9",
-    maxWidth: "400px",
+    borderRadius: "16px",
+    boxShadow: "0 6px 16px rgba(0, 0, 0, 0.1)",
+    backgroundColor: "#ffffff",
+    maxWidth: "420px",
+    marginLeft: "auto",
+    marginRight: "auto",
+    lineHeight: 1.6,
+  };
+
+  const buttonStyle = {
+    padding: "10px 18px",
+    fontSize: "16px",
+    marginRight: "10px",
+    borderRadius: "8px",
+    border: "none",
+    cursor: "pointer",
   };
 
   return (
-    <div style={{ padding: "20px", fontFamily: "sans-serif" }}>
-      <h1 style={{ fontSize: "24px", marginBottom: "16px" }}>
+    <div
+      style={{
+        padding: "20px",
+        fontFamily: "-apple-system, sans-serif",
+        textAlign: "center",
+      }}
+    >
+      <h1 style={{ fontSize: "28px", fontWeight: 600, marginBottom: "20px" }}>
         오늘의 날씨 기반 옷차림 추천
       </h1>
 
-      <button
-        onClick={getWeatherRecommendation}
-        disabled={loading}
-        style={{ padding: "10px 16px", fontSize: "16px" }}
-      >
-        {loading ? "추천 중..." : "옷차림 추천 받기"}
-      </button>
+      <div style={{ marginBottom: "20px" }}>
+        <button
+          onClick={getWeatherRecommendation}
+          disabled={loading}
+          style={{ ...buttonStyle, backgroundColor: "#0070f3", color: "white" }}
+        >
+          {loading ? "추천 중..." : "옷차림 추천 받기"}
+        </button>
+        <button
+          onClick={clearRecommendation}
+          style={{ ...buttonStyle, backgroundColor: "#e0e0e0" }}
+        >
+          추천 초기화
+        </button>
+      </div>
 
-      {error && <div style={{ color: "red", marginTop: "16px" }}>{error}</div>}
+      {error && (
+        <div style={{ color: "red", marginBottom: "16px" }}>{error}</div>
+      )}
 
       {weather && outfit && (
         <div style={cardStyle}>
@@ -111,8 +147,14 @@ export default function Home() {
             <strong>🌡 현재 기온:</strong> {weather.temp}℃ (체감온도{" "}
             {weather.feelsLike}℃, 습도 {weather.humidity}%)
           </p>
-          <p style={{ display: "flex", alignItems: "center" }}>
-            <strong>☁️ 날씨:</strong> {weather.condition}
+          <p
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <strong>☁️ 날씨:</strong>&nbsp;{weather.condition}
             <Image
               src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
               alt="날씨 아이콘"
@@ -121,6 +163,7 @@ export default function Home() {
               style={{ marginLeft: "8px" }}
             />
           </p>
+          <hr style={{ margin: "12px 0" }} />
           <p>
             <strong>👕 상의:</strong> {outfit.top}
           </p>
