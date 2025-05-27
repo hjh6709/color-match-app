@@ -10,9 +10,9 @@ export default function Home() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const savedOutfit = localStorage.getItem("outfitRecommendation");
-    if (savedOutfit) {
-      const parsed = JSON.parse(savedOutfit);
+    const savedData = localStorage.getItem("outfitRecommendation");
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
       setOutfit(parsed.outfit);
       setWeather(parsed.weather);
       setLocation(parsed.location);
