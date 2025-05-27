@@ -1,21 +1,20 @@
-# 1. 공식 Node.js 이미지 사용
-FROM node:18-alpine
-
-# 2. 작업 디렉토리 설정
+# Stage 1: Build Next.js
+FROM node:18-alpine as builder
 WORKDIR /app
 
-# 3. package.json, package-lock.json 복사
 COPY package*.json ./
-
-# 4. 의존성 설치
 RUN npm install
 
-# 5. 나머지 앱 소스 복사
 COPY . .
-
-# 6. Next.js 빌드
 RUN npm run build
 
-# 7. 애플리케이션 실행
-EXPOSE 3000
-CMD ["npm", "start"]
+# Stage 2: Run with Nginx
+FROM nginx:alpine
+
+# 앱 소스 복사
+COPY --from=builder /app/.next /usr/share/nginx/html/.next
+COPY --from=builder /app/public /usr/share/nginx/html
+COPY --from=builder /app/nginx.conf /etc/nginx/nginx.conf
+
+# API 서버가 3000번 포트에서 실행 중이라고 가정
+EXPOSE 80
