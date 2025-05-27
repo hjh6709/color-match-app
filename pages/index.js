@@ -4,6 +4,7 @@ import { useState } from "react";
 export default function Home() {
   const [outfit, setOutfit] = useState(null);
   const [weather, setWeather] = useState(null);
+  const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
 
   const getWeatherRecommendation = () => {
@@ -22,6 +23,7 @@ export default function Home() {
         const data = await res.json();
         setOutfit(data.outfit);
         setWeather({ temp: data.temp, condition: data.condition });
+        setLocation(data.location);
       } catch (e) {
         alert("날씨 정보를 불러오지 못했습니다.");
       }
@@ -45,6 +47,9 @@ export default function Home() {
 
       {weather && outfit && (
         <div style={{ marginTop: "24px", lineHeight: 1.6 }}>
+          <p>
+            <strong>📍 현재 위치:</strong> {location}
+          </p>
           <p>
             <strong>🌡 현재 날씨:</strong> {weather.condition} / {weather.temp}℃
           </p>
