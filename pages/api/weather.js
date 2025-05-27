@@ -121,11 +121,12 @@ export default async function handler(req, res) {
     const data = await response.json();
 
     const temp = data.main.temp;
+    const feelsLike = data.main.feels_like;
+    const humidity = data.main.humidity;
     const condition = data.weather[0].description;
     const location = await getLocationName(lat, lon);
 
     const option = OUTFIT_OPTIONS.find((o) => temp >= o.minTemp);
-
     const topItem = getRandom(option.top);
     const bottomItem = getRandom(option.bottom);
     const outerItem = option.outer.length > 0 ? getRandom(option.outer) : null;
@@ -137,6 +138,8 @@ export default async function handler(req, res) {
     res.status(200).json({
       location,
       temp,
+      feelsLike,
+      humidity,
       condition,
       outfit: {
         top: `${topColor} ${topItem}`,

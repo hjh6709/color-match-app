@@ -22,13 +22,28 @@ export default function Home() {
         );
         const data = await res.json();
         setOutfit(data.outfit);
-        setWeather({ temp: data.temp, condition: data.condition });
+        setWeather({
+          temp: data.temp,
+          feelsLike: data.feelsLike,
+          humidity: data.humidity,
+          condition: data.condition,
+          icon: data.icon || "01d", // 기본 아이콘
+        });
         setLocation(data.location);
       } catch (e) {
         alert("날씨 정보를 불러오지 못했습니다.");
       }
       setLoading(false);
     });
+  };
+
+  const cardStyle = {
+    marginTop: "24px",
+    padding: "20px",
+    borderRadius: "12px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+    backgroundColor: "#f9f9f9",
+    maxWidth: "400px",
   };
 
   return (
@@ -46,12 +61,21 @@ export default function Home() {
       </button>
 
       {weather && outfit && (
-        <div style={{ marginTop: "24px", lineHeight: 1.6 }}>
+        <div style={cardStyle}>
           <p>
             <strong>📍 현재 위치:</strong> {location}
           </p>
           <p>
-            <strong>🌡 현재 날씨:</strong> {weather.condition} / {weather.temp}℃
+            <strong>🌡 현재 기온:</strong> {weather.temp}℃ (체감온도{" "}
+            {weather.feelsLike}℃, 습도 {weather.humidity}%)
+          </p>
+          <p>
+            <strong>☁️ 날씨:</strong> {weather.condition}
+            <img
+              src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
+              alt="날씨 아이콘"
+              style={{ verticalAlign: "middle", marginLeft: "8px" }}
+            />
           </p>
           <p>
             <strong>👕 상의:</strong> {outfit.top}
