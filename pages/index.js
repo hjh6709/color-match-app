@@ -1,5 +1,5 @@
 // pages/index.js
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 export default function Home() {
@@ -8,6 +8,16 @@ export default function Home() {
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const savedOutfit = localStorage.getItem("outfitRecommendation");
+    if (savedOutfit) {
+      const parsed = JSON.parse(savedOutfit);
+      setOutfit(parsed.outfit);
+      setWeather(parsed.weather);
+      setLocation(parsed.location);
+    }
+  }, []);
 
   const getWeatherRecommendation = () => {
     if (!navigator.geolocation) {
@@ -29,15 +39,26 @@ export default function Home() {
           const data = await res.json();
           if (!data.outfit || !data.temp || !data.condition)
             throw new Error("응답 데이터 누락");
-          setOutfit(data.outfit);
-          setWeather({
-            temp: data.temp,
-            feelsLike: data.feelsLike,
-            humidity: data.humidity,
-            condition: data.condition,
-            icon: data.icon || "01d",
-          });
-          setLocation(data.location);
+
+          const outfitData = {
+            outfit: data.outfit,
+            weather: {
+              temp: data.temp,
+              feelsLike: data.feelsLike,
+              humidity: data.humidity,
+              condition: data.condition,
+              icon: data.icon || "01d",
+            },
+            location: data.location,
+          };
+
+          setOutfit(outfitData.outfit);
+          setWeather(outfitData.weather);
+          setLocation(outfitData.location);
+          localStorage.setItem(
+            "outfitRecommendation",
+            JSON.stringify(outfitData)
+          );
         } catch (e) {
           console.error(e);
           setError(
@@ -90,14 +111,14 @@ export default function Home() {
             <strong>🌡 현재 기온:</strong> {weather.temp}℃ (체감온도{" "}
             {weather.feelsLike}℃, 습도 {weather.humidity}%)
           </p>
-          <p>
+          <p style={{ display: "flex", alignItems: "center" }}>
             <strong>☁️ 날씨:</strong> {weather.condition}
             <Image
               src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
               alt="날씨 아이콘"
               width={50}
               height={50}
-              style={{ verticalAlign: "middle", marginLeft: "8px" }}
+              style={{ marginLeft: "8px" }}
             />
           </p>
           <p>
