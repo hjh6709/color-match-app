@@ -1,11 +1,13 @@
 // pages/index.js
 import { useState } from "react";
+import Image from "next/image";
 
 export default function Home() {
   const [outfit, setOutfit] = useState(null);
   const [weather, setWeather] = useState(null);
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const getWeatherRecommendation = () => {
     if (!navigator.geolocation) {
@@ -14,27 +16,44 @@ export default function Home() {
     }
 
     setLoading(true);
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      try {
-        const res = await fetch(
-          `/api/weather?lat=${latitude}&lon=${longitude}`
-        );
-        const data = await res.json();
-        setOutfit(data.outfit);
-        setWeather({
-          temp: data.temp,
-          feelsLike: data.feelsLike,
-          humidity: data.humidity,
-          condition: data.condition,
-          icon: data.icon || "01d", // 기본 아이콘
-        });
-        setLocation(data.location);
-      } catch (e) {
-        alert("날씨 정보를 불러오지 못했습니다.");
+    setError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const res = await fetch(
+            `/api/weather?lat=${latitude}&lon=${longitude}`
+          );
+          if (!res.ok) throw new Error("서버 응답 오류");
+          const data = await res.json();
+          if (!data.outfit || !data.temp || !data.condition)
+            throw new Error("응답 데이터 누락");
+          setOutfit(data.outfit);
+          setWeather({
+            temp: data.temp,
+            feelsLike: data.feelsLike,
+            humidity: data.humidity,
+            condition: data.condition,
+            icon: data.icon || "01d",
+          });
+          setLocation(data.location);
+        } catch (e) {
+          console.error(e);
+          setError(
+            "날씨 정보를 불러오는 데 문제가 발생했습니다. 나중에 다시 시도해주세요."
+          );
+          setOutfit(null);
+          setWeather(null);
+          setLocation("");
+        }
+        setLoading(false);
+      },
+      () => {
+        setError("위치 정보를 가져올 수 없습니다. 위치 권한을 확인해주세요.");
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    );
   };
 
   const cardStyle = {
@@ -60,6 +79,8 @@ export default function Home() {
         {loading ? "추천 중..." : "옷차림 추천 받기"}
       </button>
 
+      {error && <div style={{ color: "red", marginTop: "16px" }}>{error}</div>}
+
       {weather && outfit && (
         <div style={cardStyle}>
           <p>
@@ -71,9 +92,11 @@ export default function Home() {
           </p>
           <p>
             <strong>☁️ 날씨:</strong> {weather.condition}
-            <img
+            <Image
               src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
               alt="날씨 아이콘"
+              width={50}
+              height={50}
               style={{ verticalAlign: "middle", marginLeft: "8px" }}
             />
           </p>
