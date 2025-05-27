@@ -38,7 +38,40 @@ export default function Home() {
       bottom: ["네이비", "연청색"],
       outer: ["브라운", "베이지"],
     },
-    // 필요한 만큼 색상 조합 추가 가능
+    민트: {
+      bottom: ["흰색", "회색", "연청색"],
+      outer: ["아이보리", "그레이"],
+    },
+    연노랑: {
+      bottom: ["베이지", "진청색"],
+      outer: ["카키", "브라운"],
+    },
+    브릭레드: {
+      bottom: ["검정", "네이비"],
+      outer: ["회색", "아이보리"],
+    },
+  };
+
+  const colorToCode = {
+    베이지: "#f5f5dc",
+    검정: "#000000",
+    진청색: "#1e2d5a",
+    연청색: "#add8e6",
+    네이비: "#000080",
+    흰색: "#ffffff",
+    회색: "#808080",
+    연베이지: "#f4ecd8",
+    하늘색: "#87ceeb",
+    연핑크: "#ffb6c1",
+    크림: "#fffdd0",
+    브라운: "#a52a2a",
+    카키: "#bdb76b",
+    아이보리: "#fffff0",
+    연그레이: "#d3d3d3",
+    민트: "#98ff98",
+    연노랑: "#ffffcc",
+    브릭레드: "#8b0000",
+    그레이: "#aaaaaa",
   };
 
   useEffect(() => {
@@ -218,6 +251,58 @@ export default function Home() {
           <p>
             <strong>🧥 아우터:</strong> {outfit.outer}
           </p>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "10px",
+              marginTop: "16px",
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: colorToCode[outfit.top.split(" ")[0]],
+                width: 60,
+                height: 60,
+                borderRadius: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+              }}
+            >
+              상의
+            </div>
+            <div
+              style={{
+                backgroundColor: colorToCode[outfit.bottom.split(" ")[0]],
+                width: 60,
+                height: 60,
+                borderRadius: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+              }}
+            >
+              하의
+            </div>
+            <div
+              style={{
+                backgroundColor: colorToCode[outfit.outer.split(" ")[0]],
+                width: 60,
+                height: 60,
+                borderRadius: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+              }}
+            >
+              아우터
+            </div>
+          </div>
         </div>
       )}
     </div>
