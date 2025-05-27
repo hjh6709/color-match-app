@@ -1,6 +1,4 @@
-// pages/index.js
 import { useState, useEffect } from "react";
-import Image from "next/image";
 
 export default function Home() {
   const [outfit, setOutfit] = useState(null);
@@ -8,49 +6,6 @@ export default function Home() {
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const colorCombinations = {
-    베이지: {
-      bottom: ["진청색", "검정", "네이비"],
-      outer: ["브라운", "카키", "아이보리"],
-    },
-    검정: {
-      bottom: ["흰색", "연청색", "회색"],
-      outer: ["아이보리", "회색", "연베이지"],
-    },
-    하늘색: {
-      bottom: ["흰색", "베이지", "네이비"],
-      outer: ["연그레이", "아이보리"],
-    },
-    흰색: {
-      bottom: ["검정", "진청색", "베이지"],
-      outer: ["회색", "네이비"],
-    },
-    네이비: {
-      bottom: ["연청색", "흰색", "연베이지"],
-      outer: ["아이보리", "회색"],
-    },
-    연핑크: {
-      bottom: ["흰색", "베이지"],
-      outer: ["아이보리", "회색"],
-    },
-    크림: {
-      bottom: ["네이비", "연청색"],
-      outer: ["브라운", "베이지"],
-    },
-    민트: {
-      bottom: ["흰색", "회색", "연청색"],
-      outer: ["아이보리", "그레이"],
-    },
-    연노랑: {
-      bottom: ["베이지", "진청색"],
-      outer: ["카키", "브라운"],
-    },
-    브릭레드: {
-      bottom: ["검정", "네이비"],
-      outer: ["회색", "아이보리"],
-    },
-  };
 
   const colorToCode = {
     베이지: "#f5f5dc",
@@ -84,8 +39,6 @@ export default function Home() {
     }
   }, []);
 
-  const getRandom = (list) => list[Math.floor(Math.random() * list.length)];
-
   const getWeatherRecommendation = () => {
     if (!navigator.geolocation) {
       alert("위치 정보를 사용할 수 없습니다.");
@@ -107,18 +60,11 @@ export default function Home() {
           if (!data.outfit || !data.temp || !data.condition)
             throw new Error("응답 데이터 누락");
 
-          const topColors = Object.keys(colorCombinations);
-          const topColor = getRandom(topColors);
-          const bottomColor = getRandom(colorCombinations[topColor].bottom);
-          const outerColor = getRandom(colorCombinations[topColor].outer);
-
           const outfitData = {
             outfit: {
-              top: `${topColor} ${data.outfit.top.split(" ").slice(-1)}`,
-              bottom: `${bottomColor} ${data.outfit.bottom
-                .split(" ")
-                .slice(-1)}`,
-              outer: `${outerColor} ${data.outfit.outer.split(" ").slice(-1)}`,
+              top: data.outfit.top,
+              bottom: data.outfit.bottom,
+              outer: data.outfit.outer,
             },
             weather: {
               temp: data.temp,
@@ -127,7 +73,7 @@ export default function Home() {
               condition: data.condition,
               icon: data.icon || "01d",
             },
-            location: data.location,
+            location: data.location || "알 수 없음",
           };
 
           setOutfit(outfitData.outfit);
@@ -163,27 +109,6 @@ export default function Home() {
     setError(null);
   };
 
-  const cardStyle = {
-    marginTop: "24px",
-    padding: "20px",
-    borderRadius: "16px",
-    boxShadow: "0 6px 16px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#ffffff",
-    maxWidth: "420px",
-    marginLeft: "auto",
-    marginRight: "auto",
-    lineHeight: 1.6,
-  };
-
-  const buttonStyle = {
-    padding: "10px 18px",
-    fontSize: "16px",
-    marginRight: "10px",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-  };
-
   return (
     <div
       style={{
@@ -200,13 +125,25 @@ export default function Home() {
         <button
           onClick={getWeatherRecommendation}
           disabled={loading}
-          style={{ ...buttonStyle, backgroundColor: "#0070f3", color: "white" }}
+          style={{
+            padding: "10px 18px",
+            fontSize: "16px",
+            marginRight: "10px",
+            borderRadius: "8px",
+            backgroundColor: "#0070f3",
+            color: "white",
+          }}
         >
           {loading ? "추천 중..." : "옷차림 추천 받기"}
         </button>
         <button
           onClick={clearRecommendation}
-          style={{ ...buttonStyle, backgroundColor: "#e0e0e0" }}
+          style={{
+            padding: "10px 18px",
+            fontSize: "16px",
+            borderRadius: "8px",
+            backgroundColor: "#e0e0e0",
+          }}
         >
           추천 초기화
         </button>
@@ -217,7 +154,19 @@ export default function Home() {
       )}
 
       {weather && outfit && (
-        <div style={cardStyle}>
+        <div
+          style={{
+            marginTop: "24px",
+            padding: "20px",
+            borderRadius: "16px",
+            boxShadow: "0 6px 16px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "#ffffff",
+            maxWidth: "420px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            lineHeight: 1.6,
+          }}
+        >
           <p>
             <strong>📍 현재 위치:</strong> {location}
           </p>
@@ -233,7 +182,7 @@ export default function Home() {
             }}
           >
             <strong>☁️ 날씨:</strong>&nbsp;{weather.condition}
-            <Image
+            <img
               src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
               alt="날씨 아이콘"
               width={50}
@@ -256,51 +205,36 @@ export default function Home() {
             style={{
               display: "flex",
               justifyContent: "center",
-              gap: "10px",
+              gap: "20px",
               marginTop: "16px",
             }}
           >
             <div
               style={{
-                backgroundColor: colorToCode[outfit.top.split(" ")[0]],
-                width: 60,
-                height: 60,
-                borderRadius: 8,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
+                textAlign: "center",
+                color: colorToCode[outfit.top.split(" ")[0]],
               }}
             >
-              상의
+              <img src="/상의.svg" width={60} height={60} alt="상의" />
+              <p>{outfit.top}</p>
             </div>
             <div
               style={{
-                backgroundColor: colorToCode[outfit.bottom.split(" ")[0]],
-                width: 60,
-                height: 60,
-                borderRadius: 8,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
+                textAlign: "center",
+                color: colorToCode[outfit.bottom.split(" ")[0]],
               }}
             >
-              하의
+              <img src="/하의.svg" width={60} height={60} alt="하의" />
+              <p>{outfit.bottom}</p>
             </div>
             <div
               style={{
-                backgroundColor: colorToCode[outfit.outer.split(" ")[0]],
-                width: 60,
-                height: 60,
-                borderRadius: 8,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#fff",
+                textAlign: "center",
+                color: colorToCode[outfit.outer.split(" ")[0]],
               }}
             >
-              아우터
+              <img src="/아우터.svg" width={60} height={60} alt="아우터" />
+              <p>{outfit.outer}</p>
             </div>
           </div>
         </div>
